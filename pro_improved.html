@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>問題集 Pro — 総合学習エンジン</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--sub:#f0f3f8;--line:#dfe4ec;--text:#172033;--muted:#687386;--pri:#3157d5;--pri2:#edf2ff;--ok:#15966b;--okbg:#eaf8f2;--bad:#d84b55;--badbg:#fff0f1;--warn:#c17b00;--shadow:0 5px 18px #17203312}
+.dark{--bg:#101522;--card:#182032;--sub:#232d40;--line:#344056;--text:#eef2f8;--muted:#aab4c5;--pri:#7190ff;--pri2:#202d5c;--ok:#3dcc9a;--okbg:#123d31;--bad:#ff7c84;--badbg:#4b2025;--warn:#f4bd58}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;line-height:1.6}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.head{max-width:1080px;margin:auto;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900}.brand small{display:block;color:var(--muted);font-weight:500;font-size:11px}.actions{display:flex;gap:7px}
+button,.btn,input,select,textarea{font:inherit}button,.btn{border:0;border-radius:10px;cursor:pointer}.icon{width:40px;height:40px;background:var(--sub);color:var(--text);border:1px solid var(--line)}
+nav{max-width:1080px;margin:auto;display:flex;overflow:auto}nav button{flex:1;min-width:110px;padding:11px;background:transparent;color:var(--muted);font-weight:800;border-bottom:3px solid transparent;border-radius:0}nav button.active{color:var(--pri);border-bottom-color:var(--pri)}
+main{max-width:1080px;margin:auto;padding:18px}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.col8{grid-column:span 8}.col4{grid-column:span 4}.col6{grid-column:span 6}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+h1,h2,h3{margin:0 0 12px}h2{font-size:1.2rem}h3{font-size:1rem}.muted{color:var(--muted)}label{font-size:.82rem;font-weight:800;color:var(--muted);display:block;margin-bottom:5px}
+input[type=text],input[type=number],input[type=time],select,textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 12px;outline:none}textarea{min-height:130px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--pri)}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.stack>*+*{margin-top:10px}.btn{padding:10px 15px;background:var(--sub);color:var(--text);border:1px solid var(--line);font-weight:800}.primary{background:var(--pri);color:#fff;border-color:var(--pri)}.danger{background:var(--badbg);color:var(--bad);border-color:var(--bad)}.small{font-size:.82rem;padding:7px 10px}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--pri2);color:var(--pri);font-size:.75rem;font-weight:800}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:var(--sub);border-radius:11px;padding:12px}.stat b{font-size:1.3rem;display:block}
+.choicegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}.choice{background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:11px;padding:13px;text-align:left;cursor:pointer;min-height:54px}.choice.correct{border-color:var(--ok);background:var(--okbg)}.choice.wrong{border-color:var(--bad);background:var(--badbg)}.choice:disabled{cursor:default}
+.feedback{border-left:4px solid var(--pri);background:var(--sub);padding:13px;border-radius:9px;margin-top:12px;white-space:pre-wrap}.answerbox{display:flex;gap:8px;margin:18px 0}.answerbox input{flex:1}.passage{background:var(--sub);border-radius:11px;padding:18px;white-space:pre-wrap;line-height:1.9;margin:14px 0}.mathbox{font-family:Georgia,serif;font-size:1.15rem;background:var(--sub);padding:18px;border-radius:10px;white-space:pre-wrap}
+.timer{font-variant-numeric:tabular-nums;font-weight:900;color:var(--pri)}.timer.warn{color:var(--warn)}.timer.over{color:var(--bad)}
+.progress{height:7px;background:var(--sub);border-radius:9px;overflow:hidden}.progress>div{height:100%;background:var(--pri);width:0;transition:.2s}
+.list{max-height:470px;overflow:auto}.item{padding:12px;background:var(--sub);border-radius:10px;margin:7px 0}.item strong{display:block}.item .meta{font-size:.76rem;color:var(--muted)}
+.tabs2{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs2 button{padding:7px 11px;background:var(--sub);color:var(--text)}.tabs2 button.on{background:var(--pri);color:white}
+.notice{padding:11px 13px;background:var(--pri2);border-radius:9px;font-size:.85rem}.hidden{display:none!important}
+@media(max-width:760px){.col8,.col4,.col6{grid-column:1/-1}.choicegrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}main{padding:10px}.head{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="head"><div class="brand">問題集 Pro <small>ニッチな問題を、形式に縛られず蓄積するための学習基盤</small></div>
+ <div class="actions"><button class="icon" onclick="toggleTheme()">◐</button><button class="icon" id="soundBtn" onclick="toggleSound()">🔊</button></div></div>
+ <nav>
+  <button class="active" data-tab="play" onclick="tab('play')">挑戦</button>
+  <button data-tab="bank" onclick="tab('bank')">問題バンク</button>
+  <button data-tab="generate" onclick="tab('generate')">文章→問題</button>
+  <button data-tab="add" onclick="tab('add')">問題を作る</button>
+  <button data-tab="import" onclick="tab('import')">入出力</button>
+ </nav>
+</header>
+<main>
+<section id="play" class="view active">
+ <div id="setup" class="card">
+  <h2>出題設定</h2>
+  <div class="grid">
+   <div class="col4"><label>カテゴリ</label><select id="cat"></select></div>
+   <div class="col4"><label>問題形式</label><select id="kind"><option value="ALL">すべて</option><option value="mcq">選択式</option><option value="short">短答</option><option value="cloze">穴埋め</option><option value="reading">読解</option><option value="long">長文・論述</option><option value="language">語学</option><option value="science">理系</option></select></div>
+   <div class="col4"><label>問題数</label><select id="limit"><option>5</option><option selected>10</option><option>20</option><option value="ALL">全問</option></select></div>
+  </div>
+  <div class="grid" style="margin-top:10px">
+   <div class="col4"><label>出題順</label><select id="order"><option value="shuffle">ランダム</option><option value="sequential">登録順</option><option value="weak">未正解・低正答率を優先</option></select></div>
+   <div class="col4"><label>タイマー</label><select id="timerMode" onchange="timerModeChanged()"><option value="none">なし（計測のみ）</option><option value="count">制限時間</option><option value="question">1問ごとに制限</option></select></div>
+   <div class="col4" id="timerInputWrap"><label>時間（分）</label><input id="timerMinutes" type="number" min="0.1" step="0.1" value="10"></div>
+  </div>
+  <div class="notice" style="margin:14px 0">短答・穴埋めは表記揺れを許容する設定を問題ごとに持てます。長文・読解は「本文＋設問」のまとまりとして保存します。</div>
+  <div class="row"><b>対象 <span id="count">0</span> 問</b><button class="btn primary" onclick="startQuiz()">開始</button></div>
+ </div>
+ <div id="quiz" class="hidden">
+  <div class="row" style="justify-content:space-between;margin-bottom:9px"><span id="crumb"></span><span><span id="prog">1 / 1</span>　<span class="timer" id="timer">00:00</span></span></div>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="card" style="margin-top:12px">
+   <div class="row" style="justify-content:space-between"><span class="pill" id="qtype"></span><span class="muted" id="qid"></span></div>
+   <div id="passage" class="passage hidden"></div>
+   <div id="question" style="font-size:1.12rem;font-weight:750;line-height:1.8;margin-top:12px"></div>
+   <div id="math" class="mathbox hidden"></div>
+   <div id="choices" class="choicegrid"></div>
+   <div id="shortAnswer" class="answerbox hidden"><input id="answerInput" placeholder="答えを入力"><button class="btn primary" onclick="submitShort()">回答</button></div>
+   <div id="feedback" class="feedback hidden"></div>
+   <button id="next" class="btn primary hidden" style="width:100%;margin-top:12px" onclick="nextQ()">次の問題へ →</button>
+  </div>
+ </div>
+ <div id="result" class="card hidden">
+  <h2>結果</h2><div class="stats"><div class="stat">正解<b id="rScore">0/0</b></div><div class="stat">正答率<b id="rAcc">0%</b></div><div class="stat">時間<b id="rTime">00:00</b></div><div class="stat">形式<b id="rKinds">—</b></div></div>
+  <div id="review" class="list" style="margin-top:14px"></div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" onclick="resetPlay()">設定に戻る</button><button class="btn danger hidden" id="retryMiss" onclick="retryMissed()">不正解だけ</button></div>
+ </div>
+</section>
+
+<section id="bank" class="view">
+ <div class="card"><div class="row" style="justify-content:space-between"><h2>問題バンク</h2><span class="muted"><span id="bankCount">0</span>問</span></div>
+ <div class="grid"><div class="col6"><label>カテゴリ</label><select id="bankCat" onchange="renderBank()"></select></div><div class="col6"><label>形式</label><select id="bankKind" onchange="renderBank"><option value="ALL">すべて</option><option value="mcq">選択式</option><option value="short">短答</option><option value="cloze">穴埋め</option><option value="reading">読解</option><option value="long">長文・論述</option><option value="language">語学</option><option value="science">理系</option></select></div></div>
+ <div id="bankList" class="list" style="margin-top:12px"></div></div>
+</section>
+
+<section id="generate" class="view">
+ <div class="card">
+  <h2>文章 → 問題生成（ルールベース・試作）</h2>
+  <p class="muted">Python版の設計思想をブラウザでも扱えるよう、日付・人物・国名・格助詞などを軽量規則で抽出します。高精度なGiNZA解析は <code>rule_based_qg.py</code> 側を本体にし、ここは即時プレビュー用です。</p>
+  <textarea id="sourceText">ナポレオンは1802年3月にイギリスとのアミアン和約で当面の講和を実現した。</textarea>
+  <div class="row" style="margin-top:10px"><button class="btn primary" onclick="generateFromText()">解析して候補を生成</button><button class="btn" onclick="loadGenSample()">サンプルを戻す</button></div>
+ </div>
+ <div class="grid">
+  <div class="col6"><div class="card"><h2>抽出された事実</h2><div id="facts"></div></div></div>
+  <div class="col6"><div class="card"><h2>生成候補</h2><div id="generated"></div></div></div>
+ </div>
+</section>
+
+<section id="add" class="view">
+ <div class="card"><h2>問題を作る</h2>
+  <div class="tabs2"><button class="on" onclick="setAddType('mcq',this)">選択式</button><button onclick="setAddType('short',this)">短答</button><button onclick="setAddType('cloze',this)">穴埋め</button><button onclick="setAddType('reading',this)">読解</button><button onclick="setAddType('long',this)">長文・論述</button><button onclick="setAddType('language',this)">語学</button><button onclick="setAddType('science',this)">理系</button></div>
+  <input type="hidden" id="addType" value="mcq">
+  <div class="grid">
+   <div class="col4"><label>カテゴリ</label><input id="addCat" value="総合 > サンプル"></div>
+   <div class="col8"><label>タイトル（任意）</label><input id="addTitle" placeholder="問題を識別する名前"></div>
+  </div>
+  <div style="margin-top:10px"><label>問題文 / 設問 *</label><textarea id="addQ" placeholder="例：1802年3月にイギリスと結ばれた講和条約は何か。"></textarea></div>
+  <div id="passageField" style="margin-top:10px" class="hidden"><label>本文</label><textarea id="addPassage" placeholder="長文・読解・語学・理系問題の本文"></textarea></div>
+  <div id="choicesField" style="margin-top:10px"><label>選択肢（1行1択。正解に★を付ける）</label><textarea id="addChoices">アミアンの和約★
+ヴェルサイユ条約
+ユトレヒト条約
+パリ条約</textarea></div>
+  <div id="answerField" class="hidden" style="margin-top:10px"><label>正答 / 許容解答（短答・穴埋めは「|」区切りで複数可）</label><input id="addAnswer"></div>
+  <div style="margin-top:10px"><label>解説・採点基準</label><textarea id="addExp" placeholder="根拠、解説、採点基準、出典メモなど"></textarea></div>
+  <div class="row" style="margin-top:10px"><label style="margin:0"><input id="caseFold" type="checkbox" checked> 短答の英字大小を無視</label><label style="margin:0"><input id="partial" type="checkbox"> 語句の一部一致を許可</label></div>
+  <button class="btn primary" style="margin-top:14px;width:100%" onclick="saveQuestion()">問題バンクへ追加</button>
+ </div>
+</section>
+
+<section id="import" class="view">
+ <div class="card"><h2>一括入出力</h2><p class="muted">CSVよりも壊れにくいJSONを主形式にします。Python側で生成した問題も、このスキーマに合わせればそのまま投入できます。</p>
+ <textarea id="jsonBox" style="font-family:monospace;font-size:.82rem"></textarea>
+ <div class="row"><button class="btn primary" onclick="importJSON()">JSONを取り込む</button><button class="btn" onclick="exportJSON()">JSONを書き出す</button><button class="btn danger" onclick="clearBank()">全問題を削除</button></div></div>
+ <div class="card"><h2>問題データの考え方</h2>
+ <div class="notice"><b>type</b> を変えるだけで同じ問題バンクから出題可能：mcq / short / cloze / reading / long / language / science。<br>
+ <b>passage</b> は長文本文、<b>answer</b> は短答の正答、<b>choices</b> は選択肢、<b>rubric</b> は論述の採点基準として利用できます。</div></div>
+</section>
+</main>
+<div id="toast" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:50"></div>
+<script>
+const ORIGINAL = [
+
+            {
+                id: "q-1",
+                category: "IT > プログラミング > JavaScript",
+                question: "JavaScriptにおいて、再代入ができない変数を宣言するキーワードは？",
+                choices: ["var", "let", "const", "static"],
+                correctIndex: 2,
+                explanation: "const キーワードは再代入不可（イミュータブル）な変数を宣言します。"
+            },
+            {
+                id: "q-2",
+                category: "IT > 基本情報 > アルゴリズム",
+                question: "整列済みデータに対して効率的に探索を行うアルゴリズムは？",
+                choices: ["リニアサーチ", "バイナリサーチ (二分探索)", "ハッシュ探索", "バブルソート"],
+                correctIndex: 1,
+                explanation: "バイナリサーチ（二分探索）は最悪計算量 O(log N) で高速に検索できます。"
+            },
+            {
+                id: "q-3",
+                category: "教養 > 地理 > 日本地理",
+                question: "富士山は世界文化遺産に登録されている？",
+                choices: ["⭕（正しい）", "❌（誤り）"],
+                correctIndex: 0,
+                explanation: "2013年6月に「富士山―信仰の対象と芸術の源泉」として世界文化遺産に登録されました。"
+            },
+            {
+                id: "q-4",
+                category: "教養 > 雑学",
+                question: "「グリニッジ標準時」の略称として正しいものは？",
+                choices: ["UTC", "GMT", "JST", "EST", "PST"],
+                correctIndex: 1,
+                explanation: "GMT（Greenwich Mean Time）がグリニッジ標準時です。"
+            }
+];
+
+const EXTRA = [
+{id:"s1",type:"short",category:"世界史 > フランス革命・ナポレオン",question:"1802年3月にイギリスとフランスが結んだ講和条約は何か。",answer:["アミアンの和約","アミアン和約"],explanation:"本文から条約名を取り出す短答。",title:"アミアンの和約"},
+{id:"s2",type:"cloze",category:"世界史 > フランス革命・ナポレオン",question:"（　　　）は1802年3月にイギリスとのアミアン和約で当面の講和を実現した。",answer:["ナポレオン"],explanation:"人物名を空欄化した最小単位の問題。"},
+{id:"s3",type:"short",category:"世界史 > フランス革命・ナポレオン",question:"1802年3月、フランスが講和した相手国はどこか。",answer:["イギリス","英国"],explanation:"「イギリスとの」という格関係から生成できる短答。"},
+{id:"s4",type:"short",category:"世界史 > フランス革命・ナポレオン",question:"アミアンの和約を実現させたフランスの皇帝は誰か。",answer:["ナポレオン","ナポレオン・ボナパルト"],explanation:"文外属性をENTITY_KBで補う発展型。"},
+{id:"s5",type:"reading",category:"国語 > 読解",passage:"ある制度が便利であることと、その制度が学習に適していることは同じではない。便利さは手間を減らすが、学習ではあえて手間をかけることが理解を深める場合がある。したがって、学習用の道具は「速さ」だけでなく「何を考えさせるか」という観点から評価する必要がある。",question:"本文の主張として最も適切なものを選べ。",choices:["便利な制度は学習に使うべきではない。","学習用の道具は速さだけでなく思考を促す性質も考えるべきである。","手間が多い道具ほど学習に適している。","学習では便利さを完全に排除すべきである。"],correctIndex:1,explanation:"本文末尾の評価軸を中心に読む。"},
+{id:"s6",type:"language",category:"語学 > 英語 > 読解",passage:"Although the experiment was simple, the result was not obvious at first. The students had to compare several measurements before they could identify the pattern.",question:"Why did the students compare several measurements?",choices:["Because the experiment was dangerous.","Because the pattern was not immediately obvious.","Because the measurements were unavailable.","Because the experiment was too expensive."],correctIndex:1,explanation:"not obvious at first が根拠。"},
+{id:"s7",type:"science",category:"数学 > 解析",question:"関数 f(x)=x^2-2x が区間 [0,2] で最小値をとる点を求めよ。",answer:["1","x=1"],explanation:"f(x)=(x-1)^2-1 より x=1。"},
+{id:"s8",type:"science",category:"数学 > 幾何",passage:"三角形ABCにおいて、点Pが辺BC上にある。BP:PC=2:1とする。",question:"Pを位置ベクトルで表せ。ただし位置ベクトルを a,b,c とする。",answer:["(aは不要) (1/3)b+(2/3)c","b/3+2c/3"],explanation:"内分公式。P=(1/3)B+(2/3)C。"},
+{id:"s9",type:"long",category:"科学 > 記述",passage:"実験結果を説明する際には、観測事実と解釈を区別する必要がある。観測事実だけでは因果関係は直ちには確定せず、代替仮説を検討することで説明の強度を高められる。",question:"本文を踏まえ、「観測事実から因果関係を断定する際の注意点」について80〜120字で説明せよ。",answer:[],rubric:"観測事実と解釈の区別／因果関係は自動的には確定しない／代替仮説の検討、の3点を含む。",explanation:"論述は完全自動採点ではなく、rubricを提示する設計。"},
+{id:"s10",type:"cloze",category:"語学 > 英語 > 語彙",question:"The result was not ______ at first.（「明白な」）",answer:["obvious"],explanation:"文脈に合う語を答える。"},
+{id:"s11",type:"mcq",category:"競技科学 > 物理",question:"質量mの物体に一定の力Fを加えたときの加速度aはどれか。",choices:["a=F/m","a=m/F","a=F+m","a=F-m"],correctIndex:0,explanation:"ニュートンの運動方程式 F=ma より a=F/m。"},
+{id:"s12",type:"reading",category:"入試 > 理系長文",passage:"数学的な証明では、図から明らかに見えることと、論理的に導かれたことを区別しなければならない。図は関係を発見する手掛かりになる一方、一般性を保証するものではない。",question:"本文に基づき、図の役割として適切なものを選べ。",choices:["図だけで一般性を証明できる。","図は証明を不要にする。","図は関係を発見する手掛かりになるが、一般性を保証しない。","図は数学では使用してはいけない。"],correctIndex:2,explanation:"本文の「一方」以降が重要。"}
+];
+
+let bank=[],active=[],idx=0,score=0,missed=[],elapsed=0,interval=null,deadline=0,questionDeadline=0,sound=true,addType="mcq",stats={};
+
+function id(){return "q-"+Date.now()+"-"+Math.random().toString(36).slice(2,7)}
+function normCat(s){return (s||"一般").split(/[\/>]/).map(x=>x.trim()).filter(Boolean).join(" > ")}
+function kinds(){return {mcq:"選択式",short:"短答",cloze:"穴埋め",reading:"読解",long:"長文・論述",language:"語学",science:"理系"}}
+function load(){try{bank=JSON.parse(localStorage.getItem("problem_pro_bank_v2"))||[]}catch(e){bank=[]} if(!bank.length){bank=[...ORIGINAL.map(x=>({...x,type:x.type||"mcq"})),...EXTRA];save()} else {bank=bank.map(q=>({...q,type:q.type||"mcq"}))} renderCats();renderBank();updateCount();loadTheme()}
+function save(){localStorage.setItem("problem_pro_bank_v2",JSON.stringify(bank))}
+function cats(){let set=new Set(["ALL"]);bank.forEach(q=>{let cur="";normCat(q.category).split(" > ").forEach((x,i)=>{cur=i?cur+" > "+x:x;set.add(cur)})});return [...set].sort()}
+function fill(sel,all=true){let e=document.getElementById(sel);e.innerHTML=all?'<option value="ALL">すべて</option>':"";cats().filter(x=>x!=="ALL").forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent=x;e.appendChild(o)})}
+function renderCats(){fill("cat");fill("bankCat");}
+function match(q,c){return c==="ALL"||normCat(q.category)===c||normCat(q.category).startsWith(c+" > ")}
+function updateCount(){let c=document.getElementById("cat").value||"ALL",k=document.getElementById("kind").value||"ALL";document.getElementById("count").textContent=bank.filter(q=>match(q,c)&&(k==="ALL"||q.type===k)).length}
+function tab(t){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.getElementById(t).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));if(t==="bank")renderBank();if(t==="generate")generateFromText()}
+document.getElementById("cat").onchange=updateCount;document.getElementById("kind").onchange=updateCount;
+function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem("problem_pro_theme",document.body.classList.contains("dark")?"dark":"light")}
+function loadTheme(){if(localStorage.getItem("problem_pro_theme")==="dark")document.body.classList.add("dark")}
+function toggleSound(){sound=!sound;document.getElementById("soundBtn").textContent=sound?"🔊":"🔇"}
+function beep(ok){if(!sound)return;try{let A=window.AudioContext||window.webkitAudioContext,c=new A(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=ok?660:150;g.gain.value=.04;o.start();o.stop(c.currentTime+.12)}catch(e){}}
+function fmt(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function timerModeChanged(){document.getElementById("timerInputWrap").style.opacity=document.getElementById("timerMode").value==="none"?.55:1}
+function startQuiz(custom=null){
+ let c=document.getElementById("cat").value,k=document.getElementById("kind").value,o=document.getElementById("order").value,l=document.getElementById("limit").value;
+ let pool=custom?[...custom]:bank.filter(q=>match(q,c)&&(k==="ALL"||q.type===k));
+ if(!pool.length){toast("該当する問題がありません");return}
+ if(o==="shuffle")pool.sort(()=>Math.random()-.5);else if(o==="weak")pool.sort((a,b)=>(stats[a.id]?.wrong||0)-(stats[b.id]?.wrong||0)*-1);
+ if(l!=="ALL")pool=pool.slice(0,+l);
+ active=pool;idx=0;score=0;missed=[];elapsed=0;deadline=0;questionDeadline=0;
+ document.getElementById("setup").classList.add("hidden");document.getElementById("result").classList.add("hidden");document.getElementById("quiz").classList.remove("hidden");
+ clearInterval(interval);interval=setInterval(tick,250);tick();renderQ()
+}
+function tick(){
+ elapsed+=.25;let mode=document.getElementById("timerMode").value,mins=+document.getElementById("timerMinutes").value*60;
+ let remain=null;if(mode==="count")remain=mins-elapsed;if(mode==="question")remain=questionDeadline-(performance.now()/1000);
+ let t=document.getElementById("timer");t.textContent=fmt(remain===null?elapsed:remain);t.classList.toggle("warn",remain!==null&&remain<=10&&remain>0);t.classList.toggle("over",remain!==null&&remain<=0);
+ if(remain!==null&&remain<=0){finishQ(true)}
+}
+function renderQ(){
+ let q=active[idx],ks=kinds();document.getElementById("crumb").innerHTML='<span class="pill">'+normCat(q.category)+'</span>';document.getElementById("prog").textContent=(idx+1)+" / "+active.length;document.getElementById("bar").style.width=((idx)/active.length*100)+"%";document.getElementById("qtype").textContent=ks[q.type]||q.type;document.getElementById("qid").textContent=q.id;
+ let pass=document.getElementById("passage"),math=document.getElementById("math"),ch=document.getElementById("choices"),sa=document.getElementById("shortAnswer");
+ pass.classList.toggle("hidden",!q.passage);pass.textContent=q.passage||"";math.classList.toggle("hidden",q.type!=="science"||!q.math);math.textContent=q.math||"";document.getElementById("question").textContent=q.question||"";
+ ch.innerHTML="";ch.classList.toggle("hidden",!q.choices);sa.classList.toggle("hidden",!(q.type==="short"||q.type==="cloze"||q.type==="science"&&q.answer));
+ if(q.choices)q.choices.forEach((x,i)=>{let b=document.createElement("button");b.className="choice";b.textContent=(i+1)+". "+x;b.onclick=()=>answer(i);ch.appendChild(b)});
+ document.getElementById("feedback").classList.add("hidden");document.getElementById("next").classList.add("hidden");document.getElementById("answerInput").value="";
+ let mode=document.getElementById("timerMode").value;if(mode==="question")questionDeadline=performance.now()/1000+(+document.getElementById("timerMinutes").value*60)/Math.max(1,active.length);else questionDeadline=0
+}
+function answer(i,forced=false){
+ let q=active[idx],ok=i===q.correctIndex;if(forced)ok=false;let bs=document.querySelectorAll(".choice");bs.forEach(b=>b.disabled=true);if(bs[q.correctIndex])bs[q.correctIndex].classList.add("correct");if(!ok&&bs[i])bs[i].classList.add("wrong");finishAnswer(ok)
+}
+function normalizeAnswer(x){return String(x).trim().replace(/[　\s]+/g," ").replace(/[。．、,，]+$/,"").toLowerCase()}
+function submitShort(){let q=active[idx],input=document.getElementById("answerInput").value;let answers=q.answer||[];let ok=answers.some(a=>normalizeAnswer(input)===normalizeAnswer(a));if(document.getElementById("partial").checked)ok=answers.some(a=>normalizeAnswer(input)&&normalizeAnswer(a).includes(normalizeAnswer(input)));finishAnswer(ok)}
+function finishQ(force=false){if(document.getElementById("feedback").classList.contains("hidden")){let q=active[idx];if(q.choices)answer(q.correctIndex, true);else finishAnswer(false)}}
+function finishAnswer(ok){
+ let q=active[idx];if(stats[q.id]==null)stats[q.id]={correct:0,wrong:0};if(ok){score++;stats[q.id].correct++}else{missed.push(q);stats[q.id].wrong++}localStorage.setItem("problem_pro_stats",JSON.stringify(stats));beep(ok);
+ let f=document.getElementById("feedback");f.classList.remove("hidden");f.innerHTML="<b>"+(ok?"正解":"不正解")+"</b><br>"+(ok?"":"正答："+(q.answer?.join(" / ")||q.choices?.[q.correctIndex]||"採点基準を確認")+(q.rubric?"<br>採点基準："+q.rubric:"")+"<br>")+escapeHtml(q.explanation||"解説はありません。");document.getElementById("next").classList.remove("hidden")
+}
+function escapeHtml(s){let d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function nextQ(){idx++;if(idx<active.length)renderQ();else finishQuiz()}
+function finishQuiz(){clearInterval(interval);document.getElementById("quiz").classList.add("hidden");document.getElementById("result").classList.remove("hidden");document.getElementById("rScore").textContent=score+"/"+active.length;document.getElementById("rAcc").textContent=Math.round(score/active.length*100)+"%";document.getElementById("rTime").textContent=fmt(elapsed);document.getElementById("rKinds").textContent=[...new Set(active.map(q=>kinds()[q.type]||q.type))].join(" / ");let r=document.getElementById("review");r.innerHTML=missed.length?missed.map(q=>'<div class="item"><strong>'+escapeHtml(q.question)+'</strong><div class="meta">'+normCat(q.category)+" / "+(kinds()[q.type]||q.type)+'</div></div>').join(""):"<div class='notice'>全問正解です。</div>";document.getElementById("retryMiss").classList.toggle("hidden",!missed.length)}
+function resetPlay(){clearInterval(interval);document.getElementById("result").classList.add("hidden");document.getElementById("quiz").classList.add("hidden");document.getElementById("setup").classList.remove("hidden")}
+function retryMissed(){startQuiz(missed)}
+function renderBank(){
+ let c=document.getElementById("bankCat")?.value||"ALL",k=document.getElementById("bankKind")?.value||"ALL",arr=bank.filter(q=>match(q,c)&&(k==="ALL"||q.type===k));document.getElementById("bankCount").textContent=arr.length;document.getElementById("bankList").innerHTML=arr.map(q=>'<div class="item"><div class="row" style="justify-content:space-between"><span class="pill">'+(kinds()[q.type]||q.type)+'</span><button class="btn small danger" onclick="delQ(\''+q.id+'\')">削除</button></div><strong>'+escapeHtml(q.question)+'</strong><div class="meta">'+normCat(q.category)+(q.title?" / "+escapeHtml(q.title):"")+'</div></div>').join("")||"<div class='muted'>該当なし</div>"
+}
+function delQ(x){if(confirm("この問題を削除しますか？")){bank=bank.filter(q=>q.id!==x);save();renderCats();renderBank();updateCount()}}
+function setAddType(t,el){addType=t;document.getElementById("addType").value=t;document.querySelectorAll(".tabs2 button").forEach(b=>b.classList.remove("on"));el.classList.add("on");document.getElementById("choicesField").classList.toggle("hidden",t!=="mcq"&&t!=="reading"&&t!=="language");document.getElementById("answerField").classList.toggle("hidden",!(t==="short"||t==="cloze"||t==="science"));document.getElementById("passageField").classList.toggle("hidden",!(t==="reading"||t==="long"||t==="language"||t==="science"))}
+function saveQuestion(){
+ let t=addType,q={id:id(),type:t,category:normCat(document.getElementById("addCat").value),title:document.getElementById("addTitle").value.trim(),question:document.getElementById("addQ").value.trim(),explanation:document.getElementById("addExp").value.trim()};
+ q.passage=document.getElementById("addPassage").value.trim()||undefined;
+ if(t==="mcq"||t==="reading"||t==="language"){let a=document.getElementById("addChoices").value.split("\n").map(x=>x.trim()).filter(Boolean);q.choices=a.map(x=>x.replace(/^★/,""));q.correctIndex=Math.max(0,a.findIndex(x=>x.includes("★")));if(q.correctIndex<0)q.correctIndex=0}
+ else {q.answer=document.getElementById("addAnswer").value.split("|").map(x=>x.trim()).filter(Boolean);if(t==="long")q.rubric=document.getElementById("addExp").value.trim()}
+ if(!q.question){toast("問題文を入力してください");return}bank.unshift(q);save();renderCats();updateCount();document.getElementById("addQ").value="";toast("問題を追加しました")}
+function exportJSON(){document.getElementById("jsonBox").value=JSON.stringify(bank,null,2);toast("JSONを書き出しました")}
+function importJSON(){try{let a=JSON.parse(document.getElementById("jsonBox").value);if(!Array.isArray(a))throw Error();bank=[...bank,...a.map(q=>({...q,id:q.id||id(),type:q.type||"mcq",category:normCat(q.category)}))];save();renderCats();renderBank();updateCount();toast(a.length+"問を取り込みました")}catch(e){alert("JSON形式を確認してください")}}
+function clearBank(){if(confirm("全問題を削除します。よろしいですか？")){bank=[];save();renderCats();renderBank();updateCount()}}
+const ENTITY_KB={ナポレオン:{role:"フランスの皇帝",nationality:"フランス"}};
+function parseFacts(s){
+ let facts=[],date=[...s.matchAll(/(\d{3,4}年(?:\d{1,2}月)?(?:\d{1,2}日)?)/g)].map(m=>({text:m[1],ner:"Date"}));
+ date.forEach(x=>facts.push({...x,particle:"に"}));
+ let people=[...s.matchAll(/(?:^|[。、\s])([一-龠々ァー]{2,8})(?=は|が)/g)].map(m=>m[1]).filter(x=>x.length>=2);people.forEach(x=>facts.push({text:x,ner:"Person",particle:s.includes(x+"は")?"は":"が"}));
+ ["イギリス","フランス","ドイツ","アメリカ","ロシア","中国","日本"].forEach(x=>{if(s.includes(x)){facts.push({text:x,ner:"Country",particle:s.includes(x+"との")?"と":(s.includes(x+"と")?"と":"")});}});
+ let terms=[...s.matchAll(/([一-龠々ァー]{2,20})(?:を|で|に)/g)].map(m=>m[1]);terms.forEach(x=>{if(!facts.some(f=>f.text===x))facts.push({text:x,ner:"Term",particle:s.includes(x+"で")?"で":"を"})});
+ return facts.filter((f,i,a)=>f.text&&a.findIndex(x=>x.text===f.text&&x.ner===f.ner)===i)
+}
+function makeCandidate(s,f){
+ if(f.ner==="Person")return {q:s.replace(f.text+f.particle,"誰"+(f.particle==="は"?"が":f.particle),1).replace("。","か。"),a:[f.text],type:"short"};
+ if(f.ner==="Date")return {q:s.replace(f.text+f.particle,"いつ",1).replace("。","か。"),a:[f.text],type:"short"};
+ if(f.ner==="Country")return {q:s.replace(f.text+f.particle,"どこと",1).replace("。","か。"),a:[f.text],type:"short"};
+ return {q:s.replace(f.text+f.particle,"（　　　）",1),a:[f.text],type:"cloze"}
+}
+function generateFromText(){
+ let s=document.getElementById("sourceText").value.trim(),fs=parseFacts(s),fb=document.getElementById("facts"),gb=document.getElementById("generated");
+ fb.innerHTML=fs.map(f=>'<div class="item"><strong>'+escapeHtml(f.text)+'</strong><div class="meta">'+f.ner+" / 格助詞: "+f.particle+'</div></div>').join("")||"<div class='muted'>簡易規則では抽出できませんでした。</div>";
+ let cs=[];fs.forEach(f=>{let c=makeCandidate(s,f);if(c)cs.push(c);let kb=ENTITY_KB[f.text];if(kb?.role)cs.push({q:kb.role+"は誰か。",a:[f.text],type:"short"})});
+ gb.innerHTML=cs.map((c,i)=>'<div class="item"><strong>'+escapeHtml(c.q)+'</strong><div class="meta">想定解答：'+escapeHtml(c.a.join(" / "))+'</div><button class="btn small primary" onclick=\'addGenerated('+JSON.stringify(c).replace(/'/g,"&#39;")+')\'>問題バンクへ追加</button></div>').join("")||"<div class='muted'>候補なし</div>"
+}
+function addGenerated(c){bank.unshift({id:id(),type:c.type,category:"自動生成 > 文章解析",question:c.q,answer:c.a,explanation:"文章解析プロトタイプから生成。元文を確認してから公開用問題に昇格してください。"});save();renderCats();updateCount();toast("生成候補を追加しました")}
+function loadGenSample(){document.getElementById("sourceText").value="ナポレオンは1802年3月にイギリスとのアミアン和約で当面の講和を実現した。";generateFromText()}
+function toast(s){let e=document.getElementById("toast");e.textContent=s;e.style.opacity=1;setTimeout(()=>e.style.opacity=0,1800)}
+try{stats=JSON.parse(localStorage.getItem("problem_pro_stats"))||{}}catch(e){}
+window.onload=()=>{load();loadGenSample();setAddType("mcq",document.querySelector(".tabs2 button"))}
+</script>
+</body>
+</html>
