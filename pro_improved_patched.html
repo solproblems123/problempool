@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>問題集 Pro</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}#app{width:100%;height:100%;border:0;display:block}
+</style>
+</head>
+<body>
+<iframe id="app" src="./pro_improved.html" title="問題集 Pro"></iframe>
+<script>
+const frame=document.getElementById('app');
+const CATEGORY_KEY='problem_pro_extra_categories_v1';
+function getCategories(w){
+  let cats=new Set();
+  try{
+    const b=JSON.parse(w.localStorage.getItem('problem_pro_bank_v2')||'[]');
+    b.forEach(q=>String(q.category||'').split(/[\\/>]/).map(x=>x.trim()).filter(Boolean).forEach((_,i,a)=>cats.add(a.slice(0,i+1).join(' > '))));
+  }catch(e){}
+  try{JSON.parse(w.localStorage.getItem(CATEGORY_KEY)||'[]').forEach(x=>cats.add(x));}catch(e){}
+  return [...cats].filter(Boolean).sort((a,b)=>a.localeCompare(b,'ja'));
+}
+function saveExtra(w,c){
+  let a=[];try{a=JSON.parse(w.localStorage.getItem(CATEGORY_KEY)||'[]')}catch(e){}
+  if(!a.includes(c)){a.push(c);w.localStorage.setItem(CATEGORY_KEY,JSON.stringify(a));}
+}
+function categoryControl(w,inputId){
+  const d=w.document;
+  const input=d.getElementById(inputId); if(!input||d.getElementById(inputId+'_select'))return;
+  const wrap=d.createElement('div'); wrap.className='row'; wrap.style.alignItems='stretch';
+  const sel=d.createElement('select'); sel.id=inputId+'_select'; sel.style.flex='1';
+  const add=d.createElement('button'); add.className='btn'; add.type='button'; add.textContent='＋ジャンル追加';
+  const sync=()=>{
+    const cats=getCategories(w), old=input.value;
+    sel.innerHTML='';
+    cats.forEach(c=>{const o=d.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});
+    if(old && !cats.includes(old)){const o=d.createElement('option');o.value=old;o.textContent=old;sel.appendChild(o)}
+    sel.value=old||cats[0]||'総合'; input.value=sel.value;
+  };
+  sel.onchange=()=>{input.value=sel.value};
+  add.onclick=()=>{
+    const c=(w.prompt('追加するジャンル名を入力してください。\n例：数学 > 幾何 > 初等幾何')||'').trim();
+    if(!c)return;
+    saveExtra(w,c);input.value=c;sync();sel.value=c;
+  };
+  input.style.display='none'; input.parentNode.insertBefore(wrap,input);wrap.append(sel,add);sync();
+}
+function patch(w){
+  const d=w.document;
+  const quiz=d.getElementById('quiz');
+  if(quiz && !d.getElementById('interruptQuiz')){
+    const head=quiz.querySelector('.row');
+    const b=d.createElement('button'); b.id='interruptQuiz'; b.className='btn danger small'; b.textContent='中断';
+    b.onclick=()=>{if(w.confirm('現在の出題を中断して設定画面に戻りますか？'))w.resetPlay()};
+    head.appendChild(b);
+  }
+  categoryControl(w,'cat');
+  categoryControl(w,'addCat');
+}
+frame.addEventListener('load',()=>patch(frame.contentWindow));
+</script>
+</body>
+</html>
