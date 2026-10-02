@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pydantic
+spacy
+ginza
+ja-ginza
